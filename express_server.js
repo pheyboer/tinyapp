@@ -34,7 +34,9 @@ app.get("/urls", (req, res) => {
 
 // Define a route for handling GET requests to a specific URL from id 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[id] };
+  const id = req.params.id; // Defined id
+  const longURL = urlDatabase[id]; // Lookup longURL by id
+  const templateVars = { id: id, longURL: longURL }; // Create templateVars object
   res.render("urls_show", templateVars);
 });
 
