@@ -74,7 +74,11 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const id = req.params.id; // Get ID from URL
   const longURL = urlDatabase[id]; // Lookup longURL by ID
-  res.redirect(longURL);
+  if (longURL) {
+    res.redirect(longURL); // Redirect if longURL found
+  } else {
+    res.status(404).send("URL not found"); // Handle 404 Error
+  }
 });
 
 // Start server and listen on specified port
