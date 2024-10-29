@@ -11,6 +11,18 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+// Function to generate a random short URL ID
+function generateRandomString() {}
+
+// Parse URL encoded Data
+app.use(express.urlencoded({ extended: true }));
+
+// Route handler for POST requests to the /urls endpoint
+app.post("/urls", (req, res) => {
+  console.log(req.body); // Log the POST request body to the console
+  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+});
+
 // Define route that responds to GET requests to "/hello"
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
