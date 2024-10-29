@@ -61,11 +61,20 @@ app.get("/urls/new", (req, res) => {
 
 // Define a route for handling GET requests to a specific URL from id 
 app.get("/urls/:id", (req, res) => {
-  const id = req.params.id; // Defined id
+  const id = req.params.id; // Get URL from ID
   const longURL = urlDatabase[id]; // Lookup longURL by id
+  if (!longURL) {
+    return res.status(404).send("URL not found"); // Handle 404 Error
+  }
   const templateVars = { id: id, longURL: longURL }; // Create templateVars object
-  //res.render(longURL); // Redirect to longURL
   res.render("urls_show", templateVars);
+});
+
+// Define route for redirect to longURL
+app.get("/u/:id", (req, res) => {
+  const id = req.params.id; // Get ID from URL
+  const longURL = urlDatabase[id]; // Lookup longURL by ID
+  res.redirect(longURL);
 });
 
 // Start server and listen on specified port
