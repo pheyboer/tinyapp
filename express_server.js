@@ -12,14 +12,14 @@ const urlDatabase = {
 };
 
 // Function to generate a random short URL ID
-function generateRandomString() {
+const generateRandomString = function() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length)); 
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
-}
+};
 
 // Middleware to parse URL encoded Data
 app.use(express.urlencoded({ extended: true }));
@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
   res.send("Hello!"); // Send greeting as response
 });
 
-// Define route to get the URL database in JSON 
+// Define route to get the URL database in JSON
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -59,7 +59,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-// Define a route for handling GET requests to a specific URL from id 
+// Define a route for handling GET requests to a specific URL from id
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id; // Get URL from ID
   const longURL = urlDatabase[id]; // Lookup longURL by id
