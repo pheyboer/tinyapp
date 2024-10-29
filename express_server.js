@@ -8,6 +8,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+// Define route that responds to GET requests to "/hello"
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
 // Define route for root URL
 app.get("/", (req, res) => {
   res.send("Hello!"); // Send greeting as response
