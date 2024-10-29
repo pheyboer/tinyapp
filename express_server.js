@@ -12,9 +12,16 @@ const urlDatabase = {
 };
 
 // Function to generate a random short URL ID
-function generateRandomString() {}
+function generateRandomString() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length)); 
+  }
+  return result;
+}
 
-// Parse URL encoded Data
+// Middleware to parse URL encoded Data
 app.use(express.urlencoded({ extended: true }));
 
 // Route handler for POST requests to the /urls endpoint
