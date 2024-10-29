@@ -32,6 +32,11 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// Define route to present the form to the user
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
 // Define a route for handling GET requests to a specific URL from id 
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id; // Defined id
