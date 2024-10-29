@@ -2,6 +2,9 @@ const express = require("express"); //Import Express module
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
 
+// Set ESJ as the view engine
+app.set("view engine", "ejs");
+
 // Sample URL
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
