@@ -64,6 +64,7 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id; // Defined id
   const longURL = urlDatabase[id]; // Lookup longURL by id
   const templateVars = { id: id, longURL: longURL }; // Create templateVars object
+  //res.render(longURL); // Redirect to longURL
   res.render("urls_show", templateVars);
 });
 
