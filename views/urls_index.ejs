@@ -29,12 +29,17 @@
         <tbody>
           <% for (let id in urls) { %>
             <tr>
-              <td><%= id %></td>
-              <td><%= urls[id] %></td>
+              <td><%= urls[id].short %></td>
+              <td><%= urls[id].long %></td>
             </tr>
           <% } %>
         </tbody>
       </table>
+
+      <div>
+        <a href="#">Shorten New URL</a> 
+      </div>
+      
     </main>
     <!-- Bootstrap JS -->
     <script
