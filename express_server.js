@@ -27,7 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 // Route handler for POST requests to the /urls endpoint
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
 });
 
 // Define route that responds to GET requests to "/hello"
