@@ -32,6 +32,12 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// Define a route for handling GET requests to a specific URL from id 
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: /* What goes here? */ };
+  res.render("urls_show", templateVars);
+});
+
 // Start server and listen on specified port
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`); // Log message when server starts
