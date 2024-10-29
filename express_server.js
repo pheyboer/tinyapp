@@ -26,6 +26,12 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// Define a route that listens for GET requests made to /urls endpoint
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
+
 // Start server and listen on specified port
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`); // Log message when server starts
