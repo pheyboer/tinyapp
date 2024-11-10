@@ -12,10 +12,33 @@ app.use(cookieParser());
 // Middleware to parse URL encoded Data
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware to pass the user object to the _header
+app.use((req, res, next) => {
+  const user_id = req.cookies["user_id"];
+  if (user_id && users[user_id]) {
+    res.locals.user = users[user_id];
+  }
+  next();
+});
+
 // Sample URL
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
+};
+
+// Setting up global users Object
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "[email protected]",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "[email protected]",
+    password: "dishwasher-funk",
+  },
 };
 
 // Function to generate a random short URL ID
@@ -55,10 +78,14 @@ app.get("/urls.json", (req, res) => {
 // Define a route that listens for GET requests made to /urls endpoint
 app.get("/urls", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
-    urls: urlDatabase
+    user: res.locals.user || null,
   };
   res.render("urls_index", templateVars);
+});
+
+// Define route for Log in
+app.get("/login", (req, res) => {
+  res.render("login");
 });
 
 // Define endpoint to handle a POST to /login
@@ -134,7 +161,7 @@ app.post("/urls/:id", (req, res) => {
 // Define route for GET /register
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: res.locals.user || null,
   };
   res.render("register", templateVars);
 });
@@ -143,6 +170,14 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const userID = generateRandomString();
+  const newUser = {
+    id: userID,
+    email: email,
+    password: password,
+  };
+  users[userID] = newUser;
+  res.cookie("user_id", userID);
 });
 
 
