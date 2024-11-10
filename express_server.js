@@ -131,6 +131,20 @@ app.post("/urls/:id", (req, res) => {
   }
 });
 
+// Define route for GET /register
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("register", templateVars);
+});
+
+// Handle registration logic
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+});
+
 
 // Start server and listen on specified port
 app.listen(PORT, () => {
