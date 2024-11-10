@@ -1,10 +1,13 @@
 const express = require("express"); //Import Express module
-//const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
 
 // Set ESJ as the view engine
 app.set("view engine", "ejs");
+
+// Cookie Parser Middleware
+app.use(cookieParser());
 
 // Middleware to parse URL encoded Data
 app.use(express.urlencoded({ extended: true }));
@@ -51,7 +54,10 @@ app.get("/urls.json", (req, res) => {
 
 // Define a route that listens for GET requests made to /urls endpoint
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   res.render("urls_index", templateVars);
 });
 

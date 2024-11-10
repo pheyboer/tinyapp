@@ -18,6 +18,9 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
       <form method="POST" class="form-inline" action="/login">
+        <% if (username) { %>
+          <span class="navbar-text"> <%= username %></span>
+          <% } %>
         <input type="text" name="username" placeholder="Username">
         <button type="submit" class="btn btn-primary">Login</button>
       </form> 
