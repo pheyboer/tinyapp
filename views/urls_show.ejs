@@ -21,7 +21,11 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
-        <a href="#">Create a new URL</a>
+
+        <!--Form to submit an updated long URL-->
+        <form method="POST" action="/urls/<%= id %>/update" style="display: inline;">
+          <button type="submit" class="btn btn-primary">Update URL</button>
+        <a href="/urls/new" class="btn btn-primary">Create a new URL</a>
       </div>
       <div class="card-footer text-muted"></div>
     </div>

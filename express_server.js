@@ -88,8 +88,19 @@ app.post('/urls/:id/delete', (req, res) => {
     delete urlDatabase[id];
     res.redirect('/urls'); // redirect back to urls_index
   } //else {
-    //res.status(404).send('URL not found');
+  //res.status(404).send('URL not found');
   //}
+});
+
+// Define route to update the long URL
+app.post("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  const newLongUrl = req.body.longURL;
+
+  if (urlDatabase[id]) {
+    urlDatabase[id] = newLongUrl;
+    res.redirect("/urls");
+  }
 });
 
 // Start server and listen on specified port
