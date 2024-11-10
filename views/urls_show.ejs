@@ -24,8 +24,14 @@
 
         <!--Form to submit an updated long URL-->
         <form method="POST" action="/urls/<%= id %>/update" style="display: inline;">
-          <button type="submit" class="btn btn-primary">Update URL</button>
+          <div class="form-group">
+            <label for="longURL">New URL:</label>
+          <input type="text" name="longURL" class="form-control" value="<%= longURL %>">
+        </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <!--
         <a href="/urls/new" class="btn btn-primary">Create a new URL</a>
+        -->
       </div>
       <div class="card-footer text-muted"></div>
     </div>
