@@ -81,6 +81,17 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
+// Define POST route that removes a URL resource
+app.post('/urls/:id/delete', (req, res) => {
+  const { id } = req.params;
+  if (urlDatabase[id]) {
+    delete urlDatabase[id];
+    res.redirect('urls'); // redirect back to urls_index
+  } else {
+    res.status(404).send('URL not found');
+  }
+});
+
 // Start server and listen on specified port
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`); // Log message when server starts
