@@ -68,6 +68,12 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+// Route to handle Log Out
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+});
+
 // Define route to present the form to the user
 app.get("/urls/new", (req, res) => {
   const templateVars = {
