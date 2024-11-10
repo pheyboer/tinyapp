@@ -87,9 +87,9 @@ app.post('/urls/:id/delete', (req, res) => {
   if (urlDatabase[id]) {
     delete urlDatabase[id];
     res.redirect('/urls'); // redirect back to urls_index
-  } else {
-    res.status(404).send('URL not found');
-  }
+  } //else {
+    //res.status(404).send('URL not found');
+  //}
 });
 
 // Start server and listen on specified port
