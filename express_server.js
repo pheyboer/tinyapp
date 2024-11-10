@@ -1,9 +1,13 @@
 const express = require("express"); //Import Express module
+//const cookieParser = require("cookie-parser");
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
 
 // Set ESJ as the view engine
 app.set("view engine", "ejs");
+
+// Middleware to parse URL encoded Data
+app.use(express.urlencoded({ extended: true }));
 
 // Sample URL
 const urlDatabase = {
@@ -20,9 +24,6 @@ const generateRandomString = function() {
   }
   return result;
 };
-
-// Middleware to parse URL encoded Data
-app.use(express.urlencoded({ extended: true }));
 
 // Route handler for POST requests to the /urls endpoint
 app.post("/urls", (req, res) => {
@@ -52,6 +53,13 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+
+// Define endpoint to handle a POST to /login
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+  res.cookie("username", username); //set cookie
+  res.redirect("/urls");
 });
 
 // Define route to present the form to the user
@@ -102,6 +110,7 @@ app.post("/urls/:id", (req, res) => {
     res.redirect("/urls");
   }
 });
+
 
 // Start server and listen on specified port
 app.listen(PORT, () => {
