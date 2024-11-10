@@ -70,7 +70,11 @@ app.post("/login", (req, res) => {
 
 // Define route to present the form to the user
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
+  res.render("urls_new", templateVars);
 });
 
 // Define a route for handling GET requests to a specific URL from id
@@ -80,7 +84,11 @@ app.get("/urls/:id", (req, res) => {
   if (!longURL) {
     return res.status(404).send("URL not found"); // Handle 404 Error
   }
-  const templateVars = { id: id, longURL: longURL }; // Create templateVars object
+  const templateVars = {
+    username: req.cookies["username"],
+    id: id,
+    longURL: longURL
+  }; // Create templateVars object
   res.render("urls_show", templateVars);
 });
 
