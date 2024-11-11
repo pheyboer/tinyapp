@@ -51,6 +51,8 @@ const generateRandomString = function() {
   return result;
 };
 
+
+// Helper function to check if email exists
 const emailExists = (users, email) => {
   return Object.keys(users).includes(email);
 };
@@ -95,21 +97,32 @@ app.get("/login", (req, res) => {
 
 // Define endpoint to handle a POST to /login
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username); //set cookie
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).send("Please enter Email and Password");
+  }
+
+  const user = Object.values(users).find(user => user.email === email);
+
+  if (!user || user.password !== password) {
+    return res.status(400).send("Email or Password is Invalid, Please try again");
+  }
+
+  res.cookie("userId", user.id); //set cookie
   res.redirect("/urls");
 });
 
 // Route to handle Log Out
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("userId");
   res.redirect("/urls");
 });
 
 // Define route to present the form to the user
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: res.locals.user || null,
     urls: urlDatabase
   };
   res.render("urls_new", templateVars);
@@ -123,7 +136,7 @@ app.get("/urls/:id", (req, res) => {
     return res.status(404).send("URL not found"); // Handle 404 Error
   }
   const templateVars = {
-    username: req.cookies["username"],
+    user: res.locals.user || null,
     id: id,
     longURL: longURL
   }; // Create templateVars object
