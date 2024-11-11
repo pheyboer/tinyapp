@@ -59,6 +59,11 @@ const emailExists = (users, email) => {
   return Object.keys(users).includes(email);
 };
 
+//Helper function to find user by email
+const getUserByEmail = (email) => {
+  return Object.values(users).find(user => user.email === email);
+};
+
 // Route handler for POST requests to the /urls endpoint
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
@@ -101,11 +106,13 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
+  //Check if email and password are given
   if (!email || !password) {
     return res.status(400).send("Please enter Email and Password");
   }
 
-  const user = Object.values(users).find(user => user.email === email);
+  //Find user with helper function
+  const user = getUserByEmail(email);
 
   if (!user) {
     return res.status(403).send("Email not found");
@@ -195,11 +202,14 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  // Check if email and password are given
   if (!email || !password) {
     return res.status(400).send("Please enter valid Email and Password");
   }
 
-  if (emailExists(users, email)) {
+  //Check for existing user email
+  const existingUser = getUserByEmail(email);
+  if (existingUser) {
     return res.status(400).send("Email is registered already");
   }
 
