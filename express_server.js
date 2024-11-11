@@ -34,7 +34,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Sample URL
+// Sample URL - replace with database in production
 const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
@@ -68,7 +68,6 @@ app.post("/urls", (req, res) => {
   if (!userId || !users[userId]) {
     return res.status(403).send("<h2>You must be Registered and Logged in to create a short URL. Please Log in</h2>");
   }
-  //console.log(req.body); // Log the POST request body to the console
   //If logged in, create random URL with helper function
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
@@ -80,14 +79,15 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-// Define route that responds to GET requests to "/hello"
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 // Define route for root URL
+// If user logged in: /urls. If user not logged in: /login
 app.get("/", (req, res) => {
-  res.send("Hello!"); // Send greeting as response
+  const userId = req.session.user_id;
+  if (userId && users[userId]) {
+    return res.redirect("/urls");
+  } else {
+    return res.redirect("/login");
+  }
 });
 
 // Define route to get the URL database in JSON
@@ -178,23 +178,23 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
+  const url = urlDatabase[shortURL];
   //if user isnt logged in, show error message
   if (!userId || !users[userId]) {
     return res.status(403).send("<h2>Please Log in to see URL</h2>");
   }
   //if URL doesnt exist show 404 error message
-  if (!longURL) {
+  if (!url) {
     return res.status(404).send("<h2>URL not found. Could be deleted or Does Not Exist</h2>");
   }
   // if URL is not from user show error message
-  if (longURL.userID !== userId) {
+  if (url.userID !== userId) {
     return res.status(403).send("<h2>You do not have permission to see URL");
   }
   const templateVars = {
     user: res.locals.user || null,
     id: shortURL,
-    longURL: longURL
+    longURL: url.longURL
   }; // Create templateVars object
   res.render("urls_show", templateVars);
 });
@@ -269,8 +269,7 @@ app.get("/register", (req, res) => {
 
 // Handle registration logic and handle registration errors
 app.post("/register", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
 
   // Check if email and password are given
   if (!email || !password) {
