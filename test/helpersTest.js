@@ -26,7 +26,7 @@ describe('getUserByEmail', function() {
 
   it('should return undefined if email does not exist', function() {
     const user = getUserByEmail("[email protecting]", testUsers);
-    assert.isNull(user, 'User undefined when it does not exist in database');
+    assert.isFalse(user, 'User undefined when it does not exist in database');
   });
   
 });

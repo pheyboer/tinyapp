@@ -6,7 +6,7 @@ const getUserByEmail = (email, database) => {
       return database[userId];
     }
   }
-  return null; //if no matching email found, return null
+  return false; //if no matching email found, return false
 };
 
 module.exports = {
