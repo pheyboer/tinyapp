@@ -24,7 +24,7 @@ const urlsForUser = (userId, urlDatabase) => {
   const userUrls = {};
   for (let urlId in urlDatabase) {
     if (urlDatabase[urlId].userId === userId) { //check if userID matches
-      userUrls[urlId] = urlDatabase[urlId].longURL;
+      userUrls[urlId] = urlDatabase[urlId];
     }
   }
   return userUrls;
