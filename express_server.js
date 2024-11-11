@@ -11,7 +11,7 @@ app.set("view engine", "ejs");
 // Cookie Session Middleware to encrypt cookies
 app.use(cookieSession({
   name: 'session',
-  keys: [],
+  secret: '19321703187', //SECRET KEY
 }));
 
 // Middleware to parse URL encoded Data
@@ -19,9 +19,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware to pass the user object to _header
 app.use((req, res, next) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   if (userId && users[userId]) {
-    res.locals.user = users[userId]; // Set user data if in object
+    res.locals.user = users[userId]; // Set user data if in object and logged in
   } else {
     res.locals.user = null; // if there is no userId, set user to null
   }
@@ -65,11 +65,11 @@ const generateRandomString = function() {
 };
 
 // Helper function to return URLs where userID is equal to the id of logged in user
-const urlsForUser = (id) => {
+const urlsForUser = (userId) => {
   const userUrls = {};
-  for (let shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === id) { //check if userID matches
-      userUrls[shortURL] = urlDatabase[shortURL];
+  for (let urlId in urlDatabase) {
+    if (urlDatabase[urlId].userId === userId) { //check if userID matches
+      userUrls[urlId] = urlDatabase[urlId].longURL;
     }
   }
   return userUrls;
@@ -88,7 +88,7 @@ const getUserByEmail = (email) => {
 // Route handler for POST requests to the /urls endpoint
 // Redirect if not logged in
 app.post("/urls", (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   //redirect if not logged in
   if (!userId || !users[userId]) {
     return res.status(403).send("<h2>You must be Registered and Logged in to create a short URL. Please Log in</h2>");
@@ -123,7 +123,7 @@ app.get("/urls.json", (req, res) => {
 // Define a route that listens for GET requests made to /urls endpoint
 // Modifying to show only logged in users URLs
 app.get("/urls", (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   //No user logged in
   if (!userId || !users[userId]) {
     return res.status(403).send("<h2>Please Log in to view your URLs</h2>");
@@ -145,7 +145,7 @@ app.get("/urls", (req, res) => {
 // Define route for Log in
 //If user is logged in redirect to /urls
 app.get("/login", (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   if (userId && users[userId]) {
     return res.redirect("/urls");
   }
@@ -154,7 +154,7 @@ app.get("/login", (req, res) => {
 
 // Define endpoint to handle a POST to /login
 app.post("/login", (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body; // Destructuring of req.body
 
   //Check if email and password are given
   if (!email || !password) {
@@ -172,7 +172,7 @@ app.post("/login", (req, res) => {
   const comparePassword = bcrypt.compareSync(password, user.password);
 
   if (comparePassword) {
-    res.cookie("userId", user.id); //set cookie and renamed to userId (eslint wanted cC)
+    req.session.user_id = user.id; // set user_id in session (not cookie)
     res.redirect("/urls");
   } else {
     res.status(403).send("<h2>Password is Incorrect. Try again</h2>");
@@ -181,13 +181,13 @@ app.post("/login", (req, res) => {
 
 // Route to handle Log Out
 app.post("/logout", (req, res) => {
-  res.clearCookie("userId");
+  req.session.user_id = null; //Clear user_id from the session
   res.redirect("/login"); //Redirect to /login after logout
 });
 
 // Define route to present the form to the user and redirect if not logged in
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   if (!userId || !users[userId]) {
     return res.redirect("/login"); // redirect to login if not logged in
   }
@@ -201,7 +201,7 @@ app.get("/urls/new", (req, res) => {
 // Define a route for handling GET requests to a specific URL from id
 // Restrict access to users own URLs
 app.get("/urls/:id", (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL];
   //if user isnt logged in, show error message
@@ -238,7 +238,7 @@ app.get("/u/:id", (req, res) => {
 
 // Define POST route that removes a URL resource (delete)
 app.post('/urls/:id/delete', (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   const url = urlDatabase[shortURL];
   
@@ -259,7 +259,7 @@ app.post('/urls/:id/delete', (req, res) => {
 
 // Define route to update the long URL
 app.post("/urls/:id", (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   const newLongUrl = req.body.longURL;
   const url = urlDatabase[shortURL];
@@ -282,7 +282,7 @@ app.post("/urls/:id", (req, res) => {
 
 // Define route for GET /register
 app.get("/register", (req, res) => {
-  const userId = req.cookies["userId"];
+  const userId = req.session.user_id;
   if (userId && users[userId]) {
     return res.redirect("/urls");
   }
@@ -322,7 +322,7 @@ app.post("/register", (req, res) => {
 
   users[userID] = newUser; // Save new user
 
-  res.cookie("userId", userID); // Set Cookie
+  req.session.user_id = userID; //store user ID in session
   res.redirect("/urls"); // Redirect to URLs page
 });
 
