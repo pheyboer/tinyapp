@@ -1,5 +1,6 @@
 const express = require("express"); //Import Express module
-const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser"); // Extracts cookies and parses them into an object
+const bcrypt = require("bcryptjs"); // bcryptjs for hashing passwords
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
 
@@ -12,7 +13,7 @@ app.use(cookieParser());
 // Middleware to parse URL encoded Data
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware to pass the user object to the _header
+// Middleware to pass the user object to _header
 app.use((req, res, next) => {
   const userId = req.cookies["userId"];
   if (userId && users[userId]) {
@@ -131,8 +132,8 @@ app.get("/urls", (req, res) => {
   }
 
   const templateVars = {
-    user: res.locals.user || null,
-    urls: urlDatabase
+    user: res.locals.user, //user stored in res.locals
+    urls: userUrls // URLs for logged in user
   };
   res.render("urls_index", templateVars);
 });
@@ -163,12 +164,15 @@ app.post("/login", (req, res) => {
     return res.status(403).send("<h2>Email not found. Check Email or Register</h2>");
   }
 
-  if (user.password !== password) {
-    return res.status(403).send("<h2>Password is Incorrect. Try again</h2>");
-  }
+  // Use bcrypt compareSync to compare plain text password with hashed
+  const comparePassword = bcrypt.compareSync(password, user.password);
 
-  res.cookie("userId", user.id); //set cookie and renamed to userId (eslint wanted cC)
-  res.redirect("/urls");
+  if (comparePassword) {
+    res.cookie("userId", user.id); //set cookie and renamed to userId (eslint wanted cC)
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("<h2>Password is Incorrect. Try again</h2>");
+  }
 });
 
 // Route to handle Log Out
@@ -301,14 +305,21 @@ app.post("/register", (req, res) => {
   }
 
   const userID = generateRandomString();
+
+  // Hash Password before storing it using bcryp hashSync method
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+
   const newUser = {
     id: userID,
     email: email,
-    password: password,
+    password: hashedPassword, // Store hashed password
   };
-  users[userID] = newUser;
-  res.cookie("userId", userID);
-  res.redirect("/urls");
+
+  users[userID] = newUser; // Save new user
+
+  res.cookie("userId", userID); // Set Cookie
+  res.redirect("/urls"); // Redirect to URLs page
 });
 
 
