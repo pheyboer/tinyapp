@@ -25,8 +25,14 @@ app.use((req, res, next) => {
 
 // Sample URL
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2RandomID"
+  },
 };
 
 // Setting up global users Object
@@ -53,6 +59,16 @@ const generateRandomString = function() {
   return result;
 };
 
+// Helper function to return URLs where userID is equal to the id of logged in user
+const urlsForUser = (id) => {
+  const userUrls = {};
+  for (let shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) { //check if userID matches
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userUrls;
+};
 
 // Helper function to check if email exists
 const emailExists = (users, email) => {
@@ -68,6 +84,7 @@ const getUserByEmail = (email) => {
 // Redirect if not logged in
 app.post("/urls", (req, res) => {
   const userId = req.cookies["userId"];
+  //redirect if not logged in
   if (!userId || !users[userId]) {
     return res.status(403).send("<h2>You must be Registered and Logged in to create a short URL. Please Log in</h2>");
   }
@@ -75,7 +92,11 @@ app.post("/urls", (req, res) => {
   //If logged in, create random URL with helper function
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: userId
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -95,7 +116,20 @@ app.get("/urls.json", (req, res) => {
 });
 
 // Define a route that listens for GET requests made to /urls endpoint
+// Modifying to show only logged in users URLs
 app.get("/urls", (req, res) => {
+  const userId = req.cookies["userId"];
+  //No user logged in
+  if (!userId || !users[userId]) {
+    return res.status(403).send("<h2>Please Log in to view your URLs</h2>");
+  }
+  //helper function
+  const userUrls = urlsForUser(userId);
+  // No URLs found
+  if (Object.keys(userUrls).length === 0) {
+    return res.send("<h2>No URL found! Please create one</h2>");
+  }
+
   const templateVars = {
     user: res.locals.user || null,
     urls: urlDatabase
@@ -157,15 +191,26 @@ app.get("/urls/new", (req, res) => {
 });
 
 // Define a route for handling GET requests to a specific URL from id
+// Restrict access to users own URLs
 app.get("/urls/:id", (req, res) => {
-  const id = req.params.id; // Get URL from ID
-  const longURL = urlDatabase[id]; // Lookup longURL by id
+  const userId = req.cookies["userId"];
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
+  //if user isnt logged in, show error message
+  if (!userId || !users[userId]) {
+    return res.status(403).send("<h2>Please Log in to see URL</h2>");
+  }
+  //if URL doesnt exist show 404 error message
   if (!longURL) {
-    return res.status(404).send("<h2>URL not found. Could be deleted or Does Not Exist</h2>"); // Handle 404 Error
+    return res.status(404).send("<h2>URL not found. Could be deleted or Does Not Exist</h2>");
+  }
+  // if URL is not from user show error message
+  if (longURL.userID !== userId) {
+    return res.status(403).send("<h2>You do not have permission to see URL");
   }
   const templateVars = {
     user: res.locals.user || null,
-    id: id,
+    id: shortURL,
     longURL: longURL
   }; // Create templateVars object
   res.render("urls_show", templateVars);
