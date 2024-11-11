@@ -2,9 +2,7 @@ const express = require("express"); //Import Express module
 // Replaced cookie parser with cookie session to encrypt cookies
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs"); // bcryptjs for hashing passwords
-const { getUserByEmail } = require('./helpers'); //Import helper function
-const { generateRandomString } = require('./helpers');
-const { urlsForUser } = require('./helpers');
+const { getUserByEmail, generateRandomString, urlsForUser } = require('./helpers'); //import helper functions
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
 
