@@ -228,26 +228,48 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
-// Define POST route that removes a URL resource
+// Define POST route that removes a URL resource (delete)
 app.post('/urls/:id/delete', (req, res) => {
-  const { id } = req.params;
-  if (urlDatabase[id]) {
-    delete urlDatabase[id];
-    res.redirect('/urls'); // redirect back to urls_index
-  } //else {
-  //res.status(404).send('URL not found');
-  //}
+  const userId = req.cookies["userId"];
+  const shortURL = req.params.id;
+  const url = urlDatabase[shortURL];
+  
+  if (!userId || !users[userId]) {
+    return res.status(403).send("<h2>Please log in to delete URL</h2>");
+  }
+
+  if (!url) {
+    return res.status(403).send("<h2>404 - URL not found</h2>");
+  }
+
+  if (url.userID !== userId) {
+    return res.status(403).send("<h2>You don't have permission to delete this URL</h2>");
+  }
+  delete urlDatabase[shortURL];
+  res.redirect('/urls'); // redirect back to urls_index
 });
 
 // Define route to update the long URL
 app.post("/urls/:id", (req, res) => {
-  const id = req.params.id;
+  const userId = req.cookies["userId"];
+  const shortURL = req.params.id;
   const newLongUrl = req.body.longURL;
+  const url = urlDatabase[shortURL];
 
-  if (urlDatabase[id]) {
-    urlDatabase[id] = newLongUrl;
-    res.redirect("/urls");
+  if (!userId || !users[userId]) {
+    return res.status(403).send("<h2>Please log in to edit URL</h2>");
   }
+
+  if (!url) {
+    return res.status(403).send("<h2>404 - URL not found</h2>");
+  }
+
+  if (url.userID !== userId) {
+    return res.status(403).send("<h2>You don't have permission to edit this URL</h2>");
+  }
+  // Update long URL if user is the owner
+  url.longURL = newLongUrl;
+  res.redirect("/urls");
 });
 
 // Define route for GET /register
