@@ -4,7 +4,7 @@
   "main": "express_server.js",
   "scripts": {
     "start": "./node_modules/.bin/nodemon -L express_server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "keywords": [],
   "author": "Peter Heyboer heyboer.peter@gmail.com",
@@ -18,6 +18,8 @@
     "express": "^4.21.1"
   },
   "devDependencies": {
+    "chai": "^4.3.1",
+    "mocha": "^10.8.2",
     "nodemon": "^3.1.7"
   }
 }

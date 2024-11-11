@@ -2,6 +2,7 @@ const express = require("express"); //Import Express module
 // Replaced cookie parser with cookie session to encrypt cookies
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs"); // bcryptjs for hashing passwords
+const { getUserByEmail } = require('./helpers'); //Import helper function
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
 
@@ -80,10 +81,7 @@ const emailExists = (users, email) => {
   return Object.keys(users).includes(email);
 };
 
-//Helper function to find user by email
-const getUserByEmail = (email) => {
-  return Object.values(users).find(user => user.email === email);
-};
+
 
 // Route handler for POST requests to the /urls endpoint
 // Redirect if not logged in
@@ -162,7 +160,7 @@ app.post("/login", (req, res) => {
   }
 
   //Find user with helper function
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
 
   if (!user) {
     return res.status(403).send("<h2>Email not found. Check Email or Register</h2>");
@@ -181,7 +179,7 @@ app.post("/login", (req, res) => {
 
 // Route to handle Log Out
 app.post("/logout", (req, res) => {
-  req.session.user_id = null; //Clear user_id from the session
+  req.session.user_id = null; //Clear user_id cookie from the session
   res.redirect("/login"); //Redirect to /login after logout
 });
 
@@ -303,7 +301,7 @@ app.post("/register", (req, res) => {
   }
 
   //Check for existing user email
-  const existingUser = getUserByEmail(email);
+  const existingUser = getUserByEmail(email, users);
   if (existingUser) {
     return res.status(400).send("<h2>Email is registered already. Please Log in</h2>");
   }
