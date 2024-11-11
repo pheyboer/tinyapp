@@ -1,9 +1,14 @@
 const express = require("express"); //Import Express module
 // Replaced cookie parser with cookie session to encrypt cookies
+
 const cookieSession = require("cookie-session");
+
 const bcrypt = require("bcryptjs"); // bcryptjs for hashing passwords
+
 const { getUserByEmail, generateRandomString, urlsForUser } = require('./helpers'); //import helper functions
+
 const app = express(); //Create an Express Application
+
 const PORT = 8080; // default port 8080
 
 // Set ESJ as the view engine
@@ -54,11 +59,6 @@ const users = {
     password: "dishwasher-funk",
   },
 };
-
-
-
-
-
 
 // Route handler for POST requests to the /urls endpoint
 // Redirect if not logged in
@@ -299,6 +299,11 @@ app.post("/register", (req, res) => {
 
   req.session.user_id = userID; //store user ID in session
   res.redirect("/urls"); // Redirect to URLs page
+});
+
+// Catch-all route to handle any requests to routes that don't exist
+app.all('*', (req, res) => {
+  res.status(404).send("<h2>404 - Page not Found or Does not Exist");
 });
 
 
