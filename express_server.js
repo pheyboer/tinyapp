@@ -79,6 +79,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     user: res.locals.user || null,
+    urls: urlDatabase
   };
   res.render("urls_index", templateVars);
 });
@@ -166,10 +167,19 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
-// Handle registration logic
+// Handle registration logic and handle registration errors
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+
+  if (!email || !password) {
+    return res.status(400).send("Please enter valid Email and Password");
+  }
+
+  if (Object.keys(users).includes(email)) {
+    return res.status(400).send("Email is registered already");
+  }
+
   const userID = generateRandomString();
   const newUser = {
     id: userID,
@@ -178,6 +188,7 @@ app.post("/register", (req, res) => {
   };
   users[userID] = newUser;
   res.cookie("user_id", userID);
+  res.redirect("/urls");
 });
 
 
