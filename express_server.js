@@ -16,7 +16,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   const userId = req.cookies["userId"];
   if (userId && users[userId]) {
-    res.locals.user = users[userId];
+    res.locals.user = users[userId]; // Set user data if in object
+  } else {
+    res.locals.user = null; // if there is no userId, set user to null
   }
   next();
 });
@@ -105,18 +107,22 @@ app.post("/login", (req, res) => {
 
   const user = Object.values(users).find(user => user.email === email);
 
-  if (!user || user.password !== password) {
-    return res.status(400).send("Email or Password is Invalid, Please try again");
+  if (!user) {
+    return res.status(403).send("Email not found");
   }
 
-  res.cookie("userId", user.id); //set cookie
+  if (user.password !== password) {
+    return res.status(403).send("Password is Incorrect");
+  }
+
+  res.cookie("userId", user.id); //set cookie and renamed to userId (eslint wanted cC)
   res.redirect("/urls");
 });
 
 // Route to handle Log Out
 app.post("/logout", (req, res) => {
   res.clearCookie("userId");
-  res.redirect("/urls");
+  res.redirect("/login"); //Redirect to /login after logout
 });
 
 // Define route to present the form to the user
