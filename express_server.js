@@ -14,9 +14,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware to pass the user object to the _header
 app.use((req, res, next) => {
-  const user_id = req.cookies["user_id"];
-  if (user_id && users[user_id]) {
-    res.locals.user = users[user_id];
+  const userId = req.cookies["userId"];
+  if (userId && users[userId]) {
+    res.locals.user = users[userId];
   }
   next();
 });
@@ -49,6 +49,10 @@ const generateRandomString = function() {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
+};
+
+const emailExists = (users, email) => {
+  return Object.keys(users).includes(email);
 };
 
 // Route handler for POST requests to the /urls endpoint
@@ -176,7 +180,7 @@ app.post("/register", (req, res) => {
     return res.status(400).send("Please enter valid Email and Password");
   }
 
-  if (Object.keys(users).includes(email)) {
+  if (emailExists(users, email)) {
     return res.status(400).send("Email is registered already");
   }
 
@@ -187,7 +191,7 @@ app.post("/register", (req, res) => {
     password: password,
   };
   users[userID] = newUser;
-  res.cookie("user_id", userID);
+  res.cookie("userId", userID);
   res.redirect("/urls");
 });
 
