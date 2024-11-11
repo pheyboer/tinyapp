@@ -21,6 +21,7 @@ describe('getUserByEmail', function() {
     const expectedUserID = "userRandomID";
     
     assert.isObject(user, "User should be an Object when given email that is in database");
+    assert.equal(user.id, expectedUserID, "User ID has to match expected ID");
   });
 
   it('should return undefined if email does not exist', function() {
