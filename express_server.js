@@ -3,6 +3,8 @@ const express = require("express"); //Import Express module
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs"); // bcryptjs for hashing passwords
 const { getUserByEmail } = require('./helpers'); //Import helper function
+const { generateRandomString } = require('./helpers');
+const { urlsForUser } = require('./helpers');
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
 
@@ -55,31 +57,8 @@ const users = {
   },
 };
 
-// Function to generate a random short URL ID
-const generateRandomString = function() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-};
 
-// Helper function to return URLs where userID is equal to the id of logged in user
-const urlsForUser = (userId) => {
-  const userUrls = {};
-  for (let urlId in urlDatabase) {
-    if (urlDatabase[urlId].userId === userId) { //check if userID matches
-      userUrls[urlId] = urlDatabase[urlId].longURL;
-    }
-  }
-  return userUrls;
-};
 
-// Helper function to check if email exists
-const emailExists = (users, email) => {
-  return Object.keys(users).includes(email);
-};
 
 
 
@@ -127,7 +106,7 @@ app.get("/urls", (req, res) => {
     return res.status(403).send("<h2>Please Log in to view your URLs</h2>");
   }
   //helper function
-  const userUrls = urlsForUser(userId);
+  const userUrls = urlsForUser(userId, urlDatabase);
   // No URLs found
   if (Object.keys(userUrls).length === 0) {
     return res.send("<h2>No URL found! Please create one</h2>");
