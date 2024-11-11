@@ -65,8 +65,14 @@ const getUserByEmail = (email) => {
 };
 
 // Route handler for POST requests to the /urls endpoint
+// Redirect if not logged in
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  const userId = req.cookies["userId"];
+  if (!userId || !users[userId]) {
+    return res.status(403).send("<h2>You must be Registered and Logged in to create a short URL. Please Log in</h2>");
+  }
+  //console.log(req.body); // Log the POST request body to the console
+  //If logged in, create random URL with helper function
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
@@ -98,7 +104,12 @@ app.get("/urls", (req, res) => {
 });
 
 // Define route for Log in
+//If user is logged in redirect to /urls
 app.get("/login", (req, res) => {
+  const userId = req.cookies["userId"];
+  if (userId && users[userId]) {
+    return res.redirect("/urls");
+  }
   res.render("login");
 });
 
@@ -108,18 +119,18 @@ app.post("/login", (req, res) => {
 
   //Check if email and password are given
   if (!email || !password) {
-    return res.status(400).send("Please enter Email and Password");
+    return res.status(400).send("<h2>Please enter Email and Password</h2>");
   }
 
   //Find user with helper function
   const user = getUserByEmail(email);
 
   if (!user) {
-    return res.status(403).send("Email not found");
+    return res.status(403).send("<h2>Email not found. Check Email or Register</h2>");
   }
 
   if (user.password !== password) {
-    return res.status(403).send("Password is Incorrect");
+    return res.status(403).send("<h2>Password is Incorrect. Try again</h2>");
   }
 
   res.cookie("userId", user.id); //set cookie and renamed to userId (eslint wanted cC)
@@ -132,8 +143,12 @@ app.post("/logout", (req, res) => {
   res.redirect("/login"); //Redirect to /login after logout
 });
 
-// Define route to present the form to the user
+// Define route to present the form to the user and redirect if not logged in
 app.get("/urls/new", (req, res) => {
+  const userId = req.cookies["userId"];
+  if (!userId || !users[userId]) {
+    return res.redirect("/login"); // redirect to login if not logged in
+  }
   const templateVars = {
     user: res.locals.user || null,
     urls: urlDatabase
@@ -146,7 +161,7 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id; // Get URL from ID
   const longURL = urlDatabase[id]; // Lookup longURL by id
   if (!longURL) {
-    return res.status(404).send("URL not found"); // Handle 404 Error
+    return res.status(404).send("<h2>URL not found. Could be deleted or Does Not Exist</h2>"); // Handle 404 Error
   }
   const templateVars = {
     user: res.locals.user || null,
@@ -163,7 +178,8 @@ app.get("/u/:id", (req, res) => {
   if (longURL) {
     res.redirect(longURL); // Redirect if longURL found
   } else {
-    res.status(404).send("URL not found"); // Handle 404 Error
+    //if URL not found 404 message sent
+    res.status(404).send("<h2>404 - URL not found in database. Please check and try again</h2>"); // Handle 404 Error
   }
 });
 
@@ -191,6 +207,10 @@ app.post("/urls/:id", (req, res) => {
 
 // Define route for GET /register
 app.get("/register", (req, res) => {
+  const userId = req.cookies["userId"];
+  if (userId && users[userId]) {
+    return res.redirect("/urls");
+  }
   const templateVars = {
     user: res.locals.user || null,
   };
@@ -204,13 +224,13 @@ app.post("/register", (req, res) => {
 
   // Check if email and password are given
   if (!email || !password) {
-    return res.status(400).send("Please enter valid Email and Password");
+    return res.status(400).send("<h2>Please enter valid Email and Password</h2>");
   }
 
   //Check for existing user email
   const existingUser = getUserByEmail(email);
   if (existingUser) {
-    return res.status(400).send("Email is registered already");
+    return res.status(400).send("<h2>Email is registered already. Please Log in</h2>");
   }
 
   const userID = generateRandomString();
