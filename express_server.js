@@ -1,5 +1,6 @@
 const express = require("express"); //Import Express module
-const cookieParser = require("cookie-parser"); // Extracts cookies and parses them into an object
+// Replaced cookie parser with cookie session to encrypt cookies
+const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs"); // bcryptjs for hashing passwords
 const app = express(); //Create an Express Application
 const PORT = 8080; // default port 8080
@@ -7,8 +8,11 @@ const PORT = 8080; // default port 8080
 // Set ESJ as the view engine
 app.set("view engine", "ejs");
 
-// Cookie Parser Middleware
-app.use(cookieParser());
+// Cookie Session Middleware to encrypt cookies
+app.use(cookieSession({
+  name: 'session',
+  keys: [],
+}));
 
 // Middleware to parse URL encoded Data
 app.use(express.urlencoded({ extended: true }));
