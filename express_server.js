@@ -180,7 +180,7 @@ app.post("/login", (req, res) => {
 
 // Route to handle Log Out
 app.post("/logout", (req, res) => {
-  req.session.user_id = null; //Clear user_id cookie from the session
+  req.session = null; //Clear user_id cookie from the session
   res.redirect("/login"); //Redirect to /login after logout
 });
 
@@ -205,7 +205,7 @@ app.get("/urls/:id", (req, res) => {
   const url = urlDatabase[shortURL];
   //if user isnt logged in, show error message
   if (!userId || !users[userId]) {
-    return res.status(403).send("<h2>Please Log in to see URL</h2>");
+    return res.status(403).send("<h2>Please Log in to create URL</h2>");
   }
   //if URL doesnt exist show 404 error message
   if (!url) {
