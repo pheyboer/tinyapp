@@ -149,7 +149,12 @@ app.post("/login", (req, res) => {
     return res.status(401).send(`
       <h2>Email or Password Incorrect, Please Try Again</h2>
       <p>Please Register if you have not.</p>
-      <a href="/register" class="btn btn-primary">Go to Registration</a>
+      <div>
+        <a href="/register" class="btn btn-primary">Go to Registration</a>
+      </div>
+      <div>
+        <a href="/login" class="btn btn-secondary">Go back to Login</a>
+      </div>
     `);
   }
 
@@ -163,7 +168,12 @@ app.post("/login", (req, res) => {
     res.status(401).send(`
       <h2>Password is Incorrect. Try again</h2>
       <p>Please Register if you have not.</p>
-      <a href="/register" class="btn btn-primary">Go to Registration</a>
+      <div>
+        <a href="/register" class="btn btn-primary">Go to Registration</a>
+      </div>
+      <div>
+        <a href="/login" class="btn btn-secondary">Go back to Login</a>
+      </div>
     `);
   }
 });
