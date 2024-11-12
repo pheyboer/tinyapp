@@ -70,6 +70,9 @@ app.post("/urls", (req, res) => {
   }
   //If logged in, create random URL with helper function
   const longURL = req.body.longURL;
+  if (!longURL) {
+    return res.status(400).send("<h2>Please provide valid long URL</h2>");
+  }
   const shortURL = generateRandomString();
 
   urlDatabase[shortURL] = {
@@ -107,7 +110,10 @@ app.get("/urls", (req, res) => {
   const userUrls = urlsForUser(userId, urlDatabase);
   // No URLs found
   if (Object.keys(userUrls).length === 0) {
-    return res.send("<h2>No URL found! Please create one</h2>");
+    return res.send(`
+      <h2>No URLs found! Please create one.</h2>
+      <a href="/urls/new" class="btn btn-primary">Create New URL</a>
+    `);
   }
 
   const templateVars = {
@@ -140,7 +146,7 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(email, users);
 
   if (!user) {
-    return res.status(403).send("<h2>Email not found. Check Email or Register</h2>");
+    return res.status(401).send("<h2>Email or Password Incorrect. Please Try Again. Please Register if you have not</h2>");
   }
 
   // Use bcrypt compareSync to compare plain text password with hashed
@@ -150,7 +156,7 @@ app.post("/login", (req, res) => {
     req.session.user_id = user.id; // set user_id in session (not cookie)
     res.redirect("/urls");
   } else {
-    res.status(403).send("<h2>Password is Incorrect. Try again</h2>");
+    res.status(401).send("<h2>Password is Incorrect. Try again</h2>");
   }
 });
 
@@ -202,9 +208,9 @@ app.get("/urls/:id", (req, res) => {
 // Define route for redirect to longURL
 app.get("/u/:id", (req, res) => {
   const id = req.params.id; // Get ID from URL
-  const longURL = urlDatabase[id]; // Lookup longURL by ID
-  if (longURL) {
-    res.redirect(longURL); // Redirect if longURL found
+  const url = urlDatabase[id]; // Lookup longURL by ID
+  if (url) {
+    res.redirect(url.longURL); // Redirect if longURL found
   } else {
     //if URL not found 404 message sent
     res.status(404).send("<h2>404 - URL not found in database. Please check and try again</h2>"); // Handle 404 Error
@@ -308,5 +314,5 @@ app.all('*', (req, res) => {
 
 // Start server and listen on specified port
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`); // Log message when server starts
+  console.log(`Success: App listening on port ${PORT}`); // Log message when server starts
 });

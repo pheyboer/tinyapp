@@ -29,9 +29,12 @@
           <input type="text" name="longURL" class="form-control" value="<%= longURL %>" placeholder="Enter New URL Here">
         </div>
           <button type="submit" class="btn btn-primary">Submit</button>
-          <!--
+        </form>
+        <!-- Delete Button -->
+        <form method="POST" action="/urls/<%= id %>/delete" style="display: inline;">
+          <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this URL?')">Delete URL</button>
+        </form>
         <a href="/urls/new" class="btn btn-primary">Create a new URL</a>
-        -->
       </div>
       <div class="card-footer text-muted"></div>
     </div>
