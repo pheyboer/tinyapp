@@ -9,6 +9,11 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["Screenshot of Registration Page"](https://github.com/pheyboer/tinyapp/blob/master/docs/registration-page.png)
 !["screenshot of Create TinyURL Page"](https://github.com/pheyboer/tinyapp/blob/master/docs/new-url-page.png)
 
+# Purpose
+BEWARE: This library was published for learning purposes. It is not intended for use in production-grade software.
+
+This project was created and published as part of my learnings at Lighthouse Labs.
+
 ## Dependencies
 
 - Node.js
