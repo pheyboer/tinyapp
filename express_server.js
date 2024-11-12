@@ -146,7 +146,11 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(email, users);
 
   if (!user) {
-    return res.status(401).send("<h2>Email or Password Incorrect. Please Try Again. Please Register if you have not</h2>");
+    return res.status(401).send(`
+      <h2>Email or Password Incorrect, Please Try Again</h2>
+      <p>Please Register if you have not.</p>
+      <a href="/register" class="btn btn-primary">Go to Registration</a>
+    `);
   }
 
   // Use bcrypt compareSync to compare plain text password with hashed
@@ -156,7 +160,11 @@ app.post("/login", (req, res) => {
     req.session.user_id = user.id; // set user_id in session (not cookie)
     res.redirect("/urls");
   } else {
-    res.status(401).send("<h2>Password is Incorrect. Try again</h2>");
+    res.status(401).send(`
+      <h2>Password is Incorrect. Try again</h2>
+      <p>Please Register if you have not.</p>
+      <a href="/register" class="btn btn-primary">Go to Registration</a>
+    `);
   }
 });
 
