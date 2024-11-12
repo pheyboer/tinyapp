@@ -38,11 +38,11 @@ app.use((req, res, next) => {
 const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
-    userID: "userRandomID"
+    userId: "userRandomID"
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
-    userID: "user2RandomID"
+    userId: "user2RandomID"
   },
 };
 
@@ -77,7 +77,7 @@ app.post("/urls", (req, res) => {
 
   urlDatabase[shortURL] = {
     longURL: longURL,
-    userID: userId
+    userId: userId
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -212,7 +212,7 @@ app.get("/urls/:id", (req, res) => {
     return res.status(404).send("<h2>URL not found. Could be deleted or Does Not Exist</h2>");
   }
   // if URL is not from user show error message
-  if (url.userID !== userId) {
+  if (url.userId !== userId) {
     return res.status(403).send("<h2>You do not have permission to see URL");
   }
   const templateVars = {
@@ -249,7 +249,7 @@ app.post('/urls/:id/delete', (req, res) => {
     return res.status(403).send("<h2>404 - URL not found</h2>");
   }
 
-  if (url.userID !== userId) {
+  if (url.userId !== userId) {
     return res.status(403).send("<h2>You don't have permission to delete this URL</h2>");
   }
   delete urlDatabase[shortURL];
@@ -271,7 +271,7 @@ app.post("/urls/:id", (req, res) => {
     return res.status(403).send("<h2>404 - URL not found</h2>");
   }
 
-  if (url.userID !== userId) {
+  if (url.userId !== userId) {
     return res.status(403).send("<h2>You don't have permission to edit this URL</h2>");
   }
   // Update long URL if user is the owner
@@ -306,21 +306,21 @@ app.post("/register", (req, res) => {
     return res.status(400).send("<h2>Email is registered already. Please Log in</h2>");
   }
 
-  const userID = generateRandomString();
+  const userId = generateRandomString();
 
   // Hash Password before storing it using bcryp hashSync method
   const hashedPassword = bcrypt.hashSync(password, 10);
 
 
   const newUser = {
-    id: userID,
+    id: userId,
     email: email,
     password: hashedPassword, // Store hashed password
   };
 
-  users[userID] = newUser; // Save new user
+  users[userId] = newUser; // Save new user
 
-  req.session.user_id = userID; //store user ID in session
+  req.session.user_id = userId; //store user ID in session
   res.redirect("/urls"); // Redirect to URLs page
 });
 

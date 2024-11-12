@@ -36,38 +36,36 @@ describe('getUserByEmail', function() {
 describe('urlsForUser', function() {
 
   const urlDatabase = {
-    'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', userId: 'user1' },
-    '9smE7f': { longURL: 'http://www.google.com', userId: 'user2' },
-    'i5qjFc': { longURL: 'http://www.example.com', userId: 'user1' }
+    'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', userId: 'userRandomID' },
+    '9smE7f': { longURL: 'http://www.google.com', userId: 'user2RandomID' },
+    'i5qjFc': { longURL: 'http://www.example.com', userId: 'userRandomID' }
   };
 
   // Test case 1: The function returns only URLs that belong to the specified user
   it('should return only the URLs belonging to the specified user', function() {
-    const result = urlsForUser('user1', urlDatabase);
+    const result = urlsForUser('userRandomID', urlDatabase);
     assert.deepEqual(result, {
-      'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', userId: 'user1' },
-      'i5qjFc': { longURL: 'http://www.example.com', userId: 'user1' }
+      'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', userId: 'userRandomID' },
+      'i5qjFc': { longURL: 'http://www.example.com', userId: 'userRandomID' }
     });
   });
 
   // Test case 2: The function returns an empty object if there are no URLs for the specified user
   it('should return an empty object if there are no URLs for the specified user', function() {
-    const result = urlsForUser('user3', urlDatabase);
+    const result = urlsForUser('user3RandomID', urlDatabase);
     assert.deepEqual(result, {});
   });
 
   // Test case 3: The function returns an empty object if the urlDatabase is empty
   it('should return an empty object if the urlDatabase is empty', function() {
     const emptyDatabase = {};
-    const result = urlsForUser('user1', emptyDatabase);
+    const result = urlsForUser('userRandomID', emptyDatabase);
     assert.deepEqual(result, {});
   });
 
   // Test case 4: The function does not return any URLs that do not belong to the specified user
   it('should not return URLs that do not belong to the specified user', function() {
-    const result = urlsForUser('user1', urlDatabase);
-    assert.notDeepEqual(result, {
-      '9smE7f': { longURL: 'http://www.google.com', userId: 'user2' }
-    });
+    const result = urlsForUser('userRandomID', urlDatabase);
+    assert.notProperty(result, '9smE7f');
   });
 });

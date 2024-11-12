@@ -23,7 +23,7 @@ const generateRandomString = function() {
 const urlsForUser = (userId, urlDatabase) => {
   const userUrls = {};
   for (let urlId in urlDatabase) {
-    if (urlDatabase[urlId].userID === userId) { //check if userID matches
+    if (urlDatabase[urlId].userId === userId) { //check if userID matches
       userUrls[urlId] = urlDatabase[urlId];
     }
   }
