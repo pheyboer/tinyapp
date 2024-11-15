@@ -184,7 +184,7 @@ app.post("/login", (req, res) => {
 // Route to handle Log Out
 app.post("/logout", (req, res) => {
   req.session = null; //Clear user_id cookie from the session
-  res.clearCookie('session');
+  res.clearCookie('session'); //clear cookies after logging out
   res.redirect("/login"); //Redirect to /login after logout
 });
 
