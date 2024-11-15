@@ -18,6 +18,7 @@ app.set("view engine", "ejs");
 app.use(cookieSession({
   name: 'session',
   secret: '19321703187', //SECRET KEY
+  httpOnly: true,
 }));
 
 // Middleware to parse URL encoded Data
@@ -104,7 +105,10 @@ app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
   //No user logged in
   if (!userId || !users[userId]) {
-    return res.status(403).send("<h2>Please Log in to view your URLs</h2>");
+    return res.status(403).send(`
+      <h2>Please log in to view your URLs</h2>
+      <a href="/login" class="btn btn-primary">Log In</a>
+    `);
   }
   //helper function
   const userUrls = urlsForUser(userId, urlDatabase);
@@ -136,7 +140,6 @@ app.get("/login", (req, res) => {
 // Define endpoint to handle a POST to /login
 app.post("/login", (req, res) => {
   const { email, password } = req.body; // Destructuring of req.body
-
   //Check if email and password are given
   if (!email || !password) {
     return res.status(400).send("<h2>Please enter Email and Password</h2>");
@@ -163,7 +166,7 @@ app.post("/login", (req, res) => {
 
   if (comparePassword) {
     req.session.user_id = user.id; // set user_id in session (not cookie)
-    res.redirect("/urls");
+    return res.redirect("/urls");
   } else {
     res.status(401).send(`
       <h2>Password is Incorrect. Try again</h2>
@@ -181,6 +184,7 @@ app.post("/login", (req, res) => {
 // Route to handle Log Out
 app.post("/logout", (req, res) => {
   req.session = null; //Clear user_id cookie from the session
+  res.clearCookie('session');
   res.redirect("/login"); //Redirect to /login after logout
 });
 
@@ -310,7 +314,6 @@ app.post("/register", (req, res) => {
 
   // Hash Password before storing it using bcryp hashSync method
   const hashedPassword = bcrypt.hashSync(password, 10);
-
 
   const newUser = {
     id: userId,

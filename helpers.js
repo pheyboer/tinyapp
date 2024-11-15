@@ -6,7 +6,7 @@ const getUserByEmail = (email, database) => {
       return database[userId];
     }
   }
-  return false; //if no matching email found, return false
+  return false; //if no matching email found, return null
 };
 
 // Function to generate a random short URL ID
