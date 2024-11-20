@@ -19,13 +19,14 @@
       </div>
       <!--display user email or login form-->
       <% if (user) { %>
+      <span class="navbar-text mr-3">Welcome, <%= user.email %></span>
       <form method="POST" class="form-inline" action="/logout">
         <button type="submit" class="btn btn-danger">Log Out</button>
-        </form>
+      </form>
       <% } else { %>
-        <!--If there is no username, show login form-->
-         <a class="nav-link" href="/login">Login</a>
-         <a class="nav-link" href="/register">Register</a>
+      <!--If there is no username, show login form-->
+      <a class="nav-link" href="/login">Login</a>
+      <a class="nav-link" href="/register">Register</a>
       <% } %>
     </div>
   </nav>
